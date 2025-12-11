@@ -1,12 +1,11 @@
-import PDFUploader from "../components/PDFUploader";
-import PDFList from "../components/PDFList";
+import React from "react";
+import AnalysisUploader from "../components/AnalysisUploader";
+// ⬆ adjust path if your folder differs
 
-export default function Dashboard() {
+export default function Analysis() {
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <PDFUploader />
-      <PDFList />
+    <div className="min-h-screen bg-gray-900">
+      <AnalysisUploader />
     </div>
   );
 }

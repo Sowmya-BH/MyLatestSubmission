@@ -1,165 +1,126 @@
-// src/pages/Login.jsx
-// src/pages/Login.jsx
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api";
-
 
 export default function Login() {
   const [username, setUsername] = useState("");
-  // REMOVED: const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    // Since the backend model still expects a password, we must send one,
-    // even if it will be ignored on the server side.
-    const DUMMY_PASSWORD = "password_is_ignored";
+    const formData = new URLSearchParams();
+    formData.append("username", username);
+    formData.append("password", password);
 
     try {
-      // **1. Perform API Call to Backend**
-      const payload = {
-          username: username,
-          password: DUMMY_PASSWORD // Pass the dummy password
-      };
-      const res = await loginUser(payload);
+      setLoading(true);
 
-      // **2. Success: Save JWT and Redirect**
-      localStorage.setItem("token", res.data.access_token);
-      navigate("/documents");
+      const res = await fetch("http://localhost:8001/auth/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData,
+      });
 
-    } catch (error) {
-      // **3. Failure: Handle Errors**
-      const errorMessage = error.response?.data?.detail || "Login failed. Invalid username.";
-      alert(errorMessage);
+      const data = await res.json();
+      setLoading(false);
+
+      if (!res.ok) {
+        setError(data.detail || "Login failed");
+        return;
+      }
+
+      localStorage.setItem("token", data.access_token);
+      navigate("/analysis");
+    } catch (err) {
+      setLoading(false);
+      setError("Network error");
     }
   };
 
   return (
-    <div className="w-full h-screen flex justify-center items-center bg-gradient-to-br from-slate-900 to-slate-700">
-      <div className="backdrop-blur-lg bg-white/10 shadow-xl border border-white/20 rounded-2xl p-10 w-[420px]">
-        <h2 className="text-3xl font-bold text-white text-center mb-6">
-          Financial Advisor Login
+    <div className="flex min-h-screen flex-col justify-center px-6 py-12 bg-gray-900">
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        {/* Removed image */}
+        <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-white">
+          Sign in to your account
         </h2>
+      </div>
 
-        <form onSubmit={handleLogin} className="flex flex-col space-y-5">
+      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Username field */}
           <div>
-            <label className="text-sm text-gray-200">Username</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full mt-1 px-4 py-2 rounded-xl bg-white/20 text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Enter your username (e.g., admin@example.com)"
-            />
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-100"
+            >
+              Username
+            </label>
+            <div className="mt-2">
+              <input
+                id="username"
+                name="username"
+                type="text"
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-white
+                  outline outline-1 outline-white/10
+                  placeholder-gray-500
+                  focus:outline-2 focus:outline-indigo-500"
+              />
+            </div>
           </div>
 
-          {/* REMOVED PASSWORD INPUT FIELD */}
+          {/* Password field */}
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-100"
+            >
+              Password
+            </label>
+            <div className="mt-2">
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-white
+                  outline outline-1 outline-white/10
+                  placeholder-gray-500
+                  focus:outline-2 focus:outline-indigo-500"
+              />
+            </div>
+          </div>
 
-          <button
-            type="submit"
-            className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold transition-all shadow-lg"
-          >
-            Login
-          </button>
+          {/* Submit button */}
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex w-full justify-center rounded-md bg-indigo-500 
+                px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-400
+                focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500
+                disabled:opacity-50"
+            >
+              {loading ? "Logging in..." : "Sign in"}
+            </button>
+          </div>
+
+          {/* Error message */}
+          {error && (
+            <p className="text-red-400 text-center text-sm mt-2">{error}</p>
+          )}
         </form>
       </div>
     </div>
   );
 }
-
-// import { useState } from "react";
-// import { Link } from "react-router-dom";
-//
-// export default function Login() {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//
-//   const handleLogin = (e) => {
-//     e.preventDefault();
-//     console.log("Logging in:", email, password);
-//   };
-//
-//   return (
-//     <div className="w-full h-screen flex justify-center items-center bg-gradient-to-br from-slate-900 to-slate-700">
-//       <div className="backdrop-blur-lg bg-white/10 shadow-xl border border-white/20 rounded-2xl p-10 w-[420px]">
-//         <h2 className="text-3xl font-bold text-white text-center mb-6">
-//           Welcome Back
-//         </h2>
-//
-//         <form onSubmit={handleLogin} className="flex flex-col space-y-5">
-//           <div>
-//             <label className="text-sm text-gray-200">Email</label>
-//             <input
-//               type="email"
-//               className="w-full mt-1 px-4 py-2 rounded-xl bg-white/20 text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-blue-400"
-//               placeholder="Enter your email"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//             />
-//           </div>
-//
-//           <div>
-//             <label className="text-sm text-gray-200">Password</label>
-//             <input
-//               type="password"
-//               className="w-full mt-1 px-4 py-2 rounded-xl bg-white/20 text-white placeholder-gray-300 outline-none focus:ring-2 focus:ring-blue-400"
-//               placeholder="Enter your password"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//             />
-//           </div>
-//
-//           <button
-//             type="submit"
-//             className="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold transition-all shadow-lg"
-//           >
-//             Login
-//           </button>
-//         </form>
-//
-//         <p className="text-center text-gray-300 mt-6 text-sm">
-//           Don’t have an account?{" "}
-//           <Link
-//             to="/signup"
-//             className="text-blue-300 hover:underline cursor-pointer"
-//           >
-//             Sign Up
-//           </Link>
-//         </p>
-//       </div>
-//     </div>
-//   );
-// }
-//
-//
-//
-// // import { useState } from "react";
-// // import { loginUser } from "../api";
-// // import { useNavigate } from "react-router-dom";
-// //
-// // export default function Login() {
-// //   const nav = useNavigate();
-// //   const [form, setForm] = useState({ username: "", password: "" });
-// //
-// //   const handleLogin = async () => {
-// //     try {
-// //       const res = await loginUser(form);
-// //       localStorage.setItem("token", res.data.access_token);
-// //       nav("/dashboard");
-// //     } catch (e) {
-// //       alert("Login failed");
-// //     }
-// //   };
-// //
-// //   return (
-// //     <div>
-// //       <h1>Login</h1>
-// //       <input placeholder="Username" onChange={(e) => setForm({ ...form, username: e.target.value })} />
-// //       <input placeholder="Password" type="password" onChange={(e) => setForm({ ...form, password: e.target.value })} />
-// //       <button onClick={handleLogin}>Login</button>
-// //     </div>
-// //   );
-// // }

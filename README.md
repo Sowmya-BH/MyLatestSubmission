@@ -87,6 +87,7 @@ Uploads document + runs full CrewAI pipeline.
 }
 ```
 
+```
 ---
 ┌──────────────────────────┐
 │        React UI          │
@@ -121,7 +122,7 @@ Uploads document + runs full CrewAI pipeline.
 
 Future:
 SQLite for storage
-
+```
 # 🤖 **CrewAI Pipeline**
 
 Your `CkdV3` Crew consists of:

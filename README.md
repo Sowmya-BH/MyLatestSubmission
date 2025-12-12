@@ -37,46 +37,6 @@ This project allows users to:
 
 ---
 
-# 📁 **Project Structure**
-
-```
-financial_advisor/
-│
-├── backend/
-│   ├── app.py
-│   ├── auth.py
-│   ├── database.py
-│   ├── models.py
-│   ├── endpoints/
-│   │   └── analysis.py
-│   ├── crew.py
-│   ├── tools/
-│   │   ├── custom_tool.py
-│   │   └── process_pdf_tool.py
-│   └── knowledge/
-│       └── (sample PDFs)
-│
-└── frontend/
-    ├── src/
-    │   ├── main.jsx
-    │   ├── App.jsx
-    │   ├── index.css
-    │   ├── api.js
-    │   ├── pages/
-    │   │   ├── Login.jsx
-    │   │   ├── Protected.jsx
-    │   │   └── Analysis.jsx
-    │   ├── components/
-    │   │   ├── AnalysisUploader.jsx
-    │   │   ├── PDFUploader.jsx
-    │   │   ├── QueryBox.jsx
-    │   │   └── PDFList.jsx
-    │   └── assets/
-    └── index.html
-```
-
----
-
 # 🔐 **Authentication Flow (JWT)**
 
 1. User logs in using `/auth/token`
